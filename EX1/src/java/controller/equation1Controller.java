@@ -34,16 +34,27 @@ public class equation1Controller extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        double a = Double.parseDouble(request.getParameter("a"));
-        double b = Double.parseDouble(request.getParameter("b"));
-    
+        try{
+            double a = Double.parseDouble(request.getParameter("a"));
+            double b = Double.parseDouble(request.getParameter("b"));
+            
+            equation1 model = new equation1(a, b);
+            
+            String result = model.getResult().toString();
         
-        equation1 model = new equation1(a, b);
-        String result = model.getResult().toString();
-
+        
+        
        
-        request.setAttribute("model", model);
-        request.setAttribute("result", result);
+            request.setAttribute("model", model);
+            request.setAttribute("result", result);
+        
+               
+        }
+        catch(NumberFormatException e){
+            request.setAttribute("result", "Vui long nhap so hop le");
+        }
+        
+        
         request.getRequestDispatcher("/equation1.jsp").forward(request,response);
     }
 

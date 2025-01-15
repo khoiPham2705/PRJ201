@@ -9,9 +9,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Equation 1</title>
     </head>
     <body>
+        <a href = "index.html" > Quay ve </a>
         <h1>Equation  ax + b = 0</h1>
 
 

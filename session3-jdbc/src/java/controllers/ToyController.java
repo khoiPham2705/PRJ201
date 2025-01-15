@@ -3,23 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package controllers;
 
+import db.Toy;
+import db.ToyFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.equation2;
 
 /**
  *
  * @author LAPTOP
  */
-@WebServlet(name = "equation2Controller", urlPatterns = {"/equa2Controller"})
-public class equation2Controller extends HttpServlet {
+@WebServlet(name = "ToyController", urlPatterns = {"/toy"})
+public class ToyController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,20 +37,16 @@ public class equation2Controller extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try {
-            double a = Double.parseDouble(request.getParameter("a"));
-            double b = Double.parseDouble(request.getParameter("b"));
-            double c = Double.parseDouble(request.getParameter("c"));
-
-            equation2 model = new equation2(a, b, c);
-            String result = model.getResult().toString();
-
-            request.setAttribute("model", model);
-            request.setAttribute("result", result);
+            //doc table toy
+            ToyFacade tf = new ToyFacade();
+            List<Toy> list = tf.select();
+            //luu list vao request
+            request.setAttribute("list", list);
+            //forward request va response cho view 
+            request.getRequestDispatcher("/toy.jsp").forward(request, response);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        catch(NumberFormatException e){
-            request.setAttribute("result", "Vui long nhap so hop le");
-        }
-        request.getRequestDispatcher("/equation2.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

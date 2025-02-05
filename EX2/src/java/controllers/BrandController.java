@@ -5,8 +5,8 @@
  */
 package controllers;
 
-import db.Toy;
-import db.ToyFacade;
+import db.Brand;
+import db.BrandFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -20,10 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author LG
+ * @author LAPTOP
  */
-@WebServlet(name = "ToyController", urlPatterns = {"/toy"})
-public class ToyController extends HttpServlet {
+@WebServlet(urlPatterns = {"/brand"})
+public class BrandController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,7 +43,6 @@ public class ToyController extends HttpServlet {
                 index(request, response);
                 break;
             case "create":
-                // Hien create form
                 create(request, response);
                 break;
             case "create_handler":
@@ -51,35 +50,32 @@ public class ToyController extends HttpServlet {
                 create_handler(request, response);
                 break;
             case "delete":
-                // Hien delete form
                 delete(request, response);
                 break;
             case "delete_handler":
-                // Xu ly delete form
                 delete_handler(request, response);
-                break;  
+                break;
             case "edit":
-                // Hien edit form
                 edit(request, response);
                 break;
             case "edit_handler":
-                // Xu ly edit form
                 edit_handler(request, response);
-                break;   
-        }   
+                break;
+                
 
+        }
     }
 
     protected void index(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             //doc table toy
-            ToyFacade tf = new ToyFacade();
-            List<Toy> list = tf.select();
+            BrandFacade bf = new BrandFacade();
+            List<Brand> list = bf.select();
             //luu list vao request
             request.setAttribute("list", list);
             //forward request va response cho view 
-            request.getRequestDispatcher("/toy.jsp").forward(request, response);
+            request.getRequestDispatcher("/brand.jsp").forward(request, response);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -87,77 +83,61 @@ public class ToyController extends HttpServlet {
 
     protected void create(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.getRequestDispatcher("/create.jsp").forward(request, response);
     }
 
     protected void create_handler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
             String op = request.getParameter("op");
             switch (op) {
                 case "create":
                     String id = request.getParameter("id");
                     String name = request.getParameter("name");
-                    double price = Double.parseDouble(request.getParameter("price"));
-                    String expDate = request.getParameter("expDate");
-                    String brand = request.getParameter("brand");
-                    //tao doi tuong toy
-                    Toy toy = new Toy();
-                    toy.setId(id);
-                    toy.setName(name);
-                    toy.setPrice(price);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    toy.setExpDate(sdf.parse(expDate));
-                    toy.setBrand(brand);
-                    
+
+                    //tao doi tuong brand
+                    Brand brand = new Brand();
+                    brand.setId(id);
+                    brand.setName(name);
+
                     //insert data vao db
-                    ToyFacade tf = new ToyFacade();
-                    tf.create(toy);     
+                    BrandFacade bf = new BrandFacade();
+                    bf.create(brand);
                 case "cancel":
-                    request.getRequestDispatcher("/toy?action=index").forward(request, response);
+                    request.getRequestDispatcher("/brand?action=index").forward(request, response);
                     break;
             }
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
-            request.setAttribute("message","Can't insert a new toy");
-            request.getRequestDispatcher("/create.jsp").forward(request,response);
+            request.setAttribute("message", "Can't insert a new toy");
+            request.getRequestDispatcher("/create.jsp").forward(request, response);
         }
     }
-    protected void delete(HttpServletRequest request, HttpServletResponse response)
+     protected void delete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try{
-            request.getRequestDispatcher("/delete.jsp").forward(request, response);
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-        }
-        
+        request.getRequestDispatcher("/delete.jsp").forward(request, response);
     }
 
     protected void delete_handler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         try {
             String op = request.getParameter("op");
             switch (op) {
                 case "yes":
-                       String id = request.getParameter("id");
-                       //xoa toy
-                       ToyFacade tf = new ToyFacade();
-                       tf.delete(id);
+                    String id = request.getParameter("id");
+                    //xoa toy
+                    BrandFacade bf = new BrandFacade();
+                    bf.delete(id);
                 case "no":
-                    //cho hien danh sach toys ( chay lai case index )
-                    request.getRequestDispatcher("/toy?action=index").forward(request, response);
+                    request.getRequestDispatcher("/brand?action=index").forward(request, response);
                     break;
             }
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
-            request.setAttribute("message","Can't insert a new toy");
-            request.getRequestDispatcher("/delete.jsp").forward(request,response);
+            request.setAttribute("message", "Can't insert a new toy");
+            request.getRequestDispatcher("/delete.jsp").forward(request, response);
         }
     }
     protected void edit(HttpServletRequest request, HttpServletResponse response)
@@ -165,10 +145,10 @@ public class ToyController extends HttpServlet {
         try{
             String id = request.getParameter("id");
             // doc toy tu db
-            ToyFacade tf = new ToyFacade();
-            Toy toy = tf.read(id);
+            BrandFacade bf = new BrandFacade();
+            Brand brand = bf.read(id);
             // luu toy vao request de truyen vao view
-            request.setAttribute("toy",toy);
+            request.setAttribute("brand",brand);
             //cho hien view edit.jsp
             request.getRequestDispatcher("/edit.jsp").forward(request, response);
         }
@@ -187,21 +167,16 @@ public class ToyController extends HttpServlet {
                 case "update":
                     String id = request.getParameter("id");
                     String name = request.getParameter("name");
-                    double price = Double.parseDouble(request.getParameter("price"));
-                    String expDate = request.getParameter("expDate");
-                    String brand = request.getParameter("brand");
+                    
                     //tao doi tuong toy
-                    Toy toy = new Toy();
-                    toy.setId(id);
-                    toy.setName(name);
-                    toy.setPrice(price);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    toy.setExpDate(sdf.parse(expDate));
-                    toy.setBrand(brand);
+                    Brand brand = new Brand();
+                    brand.setId(id);
+                    brand.setName(name);
+                    
                     
                     //insert data vao db
-                    ToyFacade tf = new ToyFacade();
-                    tf.update(toy);     
+                    BrandFacade bf = new BrandFacade();
+                    bf.update(brand);     
                 case "cancel":
                     //cho hien danh sach toys ( chay lai case index )
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
@@ -214,16 +189,6 @@ public class ToyController extends HttpServlet {
             edit(request, response);
         }
     }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -252,7 +217,8 @@ public class ToyController extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-/**
+
+    /**
      * Returns a short description of the servlet.
      *
      * @return a String containing servlet description
@@ -262,6 +228,4 @@ public class ToyController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
-        
 }

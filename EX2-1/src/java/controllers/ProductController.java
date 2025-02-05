@@ -5,8 +5,8 @@
  */
 package controllers;
 
-import db.Toy;
-import db.ToyFacade;
+import db.Product;
+import db.ProductFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -20,10 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author LG
+ * @author LAPTOP
  */
-@WebServlet(name = "ToyController", urlPatterns = {"/toy"})
-public class ToyController extends HttpServlet {
+@WebServlet(name = "ProductController", urlPatterns = {"/product"})
+public class ProductController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,7 +35,7 @@ public class ToyController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException  {
         response.setContentType("text/html;charset=UTF-8");
         String action = request.getParameter("action");
         switch (action) {
@@ -43,29 +43,28 @@ public class ToyController extends HttpServlet {
                 index(request, response);
                 break;
             case "create":
-                // Hien create form
-                create(request, response);
+                create(request,response);
                 break;
             case "create_handler":
-                // Xu ly create form
-                create_handler(request, response);
+                create_handler(request,response);
                 break;
             case "delete":
-                // Hien delete form
+         
                 delete(request, response);
                 break;
             case "delete_handler":
-                // Xu ly delete form
+      
                 delete_handler(request, response);
                 break;  
             case "edit":
-                // Hien edit form
+     
                 edit(request, response);
                 break;
             case "edit_handler":
-                // Xu ly edit form
+      
                 edit_handler(request, response);
-                break;   
+                break;  
+            
         }   
 
     }
@@ -73,56 +72,51 @@ public class ToyController extends HttpServlet {
     protected void index(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            //doc table toy
-            ToyFacade tf = new ToyFacade();
-            List<Toy> list = tf.select();
-            //luu list vao request
+
+            ProductFacade pf = new ProductFacade();
+            List<Product> list = pf.select();
+  
             request.setAttribute("list", list);
-            //forward request va response cho view 
-            request.getRequestDispatcher("/toy.jsp").forward(request, response);
+       
+            request.getRequestDispatcher("/product.jsp").forward(request, response);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
-
     protected void create(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.getRequestDispatcher("/create.jsp").forward(request, response);
     }
-
     protected void create_handler(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
+            throws ServletException, IOException{
         try {
             String op = request.getParameter("op");
-            switch (op) {
+            switch(op){
                 case "create":
-                    String id = request.getParameter("id");
+                    
                     String name = request.getParameter("name");
                     double price = Double.parseDouble(request.getParameter("price"));
                     String expDate = request.getParameter("expDate");
-                    String brand = request.getParameter("brand");
-                    //tao doi tuong toy
-                    Toy toy = new Toy();
-                    toy.setId(id);
-                    toy.setName(name);
-                    toy.setPrice(price);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    toy.setExpDate(sdf.parse(expDate));
-                    toy.setBrand(brand);
                     
-                    //insert data vao db
-                    ToyFacade tf = new ToyFacade();
-                    tf.create(toy);     
+                    Product product = new Product();
+                   
+                    product.setName(name);
+                    product.setPrice(price);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    product.setExpDate(sdf.parse(expDate));
+                    
+                    ProductFacade pf = new ProductFacade();
+                    pf.create(product);
+                    
                 case "cancel":
-                    request.getRequestDispatcher("/toy?action=index").forward(request, response);
+                    request.getRequestDispatcher("/product?action=index").forward(request, response);
                     break;
+                    
             }
             
-        } catch (Exception ex) {
+        } catch (   Exception ex) {
             ex.printStackTrace();
-            request.setAttribute("message","Can't insert a new toy");
+            request.setAttribute("message","Can't insert a new product");
             request.getRequestDispatcher("/create.jsp").forward(request,response);
         }
     }
@@ -145,37 +139,34 @@ public class ToyController extends HttpServlet {
             switch (op) {
                 case "yes":
                        String id = request.getParameter("id");
-                       //xoa toy
-                       ToyFacade tf = new ToyFacade();
-                       tf.delete(id);
+             
+                       ProductFacade pf = new ProductFacade();
+                       pf.delete(id);
                 case "no":
-                    //cho hien danh sach toys ( chay lai case index )
-                    request.getRequestDispatcher("/toy?action=index").forward(request, response);
+                  
+                    request.getRequestDispatcher("/product?action=index").forward(request, response);
                     break;
             }
             
         } catch (Exception ex) {
             ex.printStackTrace();
-            request.setAttribute("message","Can't insert a new toy");
+            request.setAttribute("message","Can't delete");
             request.getRequestDispatcher("/delete.jsp").forward(request,response);
         }
     }
     protected void edit(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try{
+
+        try {
             String id = request.getParameter("id");
-            // doc toy tu db
-            ToyFacade tf = new ToyFacade();
-            Toy toy = tf.read(id);
-            // luu toy vao request de truyen vao view
-            request.setAttribute("toy",toy);
-            //cho hien view edit.jsp
+            ProductFacade pf = new ProductFacade();
+            Product product = pf.read(id);
+            request.setAttribute("product", product);
             request.getRequestDispatcher("/edit.jsp").forward(request, response);
-        }
-        catch(Exception ex){
+
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
     }
 
     protected void edit_handler(HttpServletRequest request, HttpServletResponse response)
@@ -185,45 +176,30 @@ public class ToyController extends HttpServlet {
             String op = request.getParameter("op");
             switch (op) {
                 case "update":
+                   
                     String id = request.getParameter("id");
                     String name = request.getParameter("name");
                     double price = Double.parseDouble(request.getParameter("price"));
                     String expDate = request.getParameter("expDate");
-                    String brand = request.getParameter("brand");
-                    //tao doi tuong toy
-                    Toy toy = new Toy();
-                    toy.setId(id);
-                    toy.setName(name);
-                    toy.setPrice(price);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    toy.setExpDate(sdf.parse(expDate));
-                    toy.setBrand(brand);
                     
-                    //insert data vao db
-                    ToyFacade tf = new ToyFacade();
-                    tf.update(toy);     
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                   
+                    Product product = new Product(id, name, price, sdf.parse(expDate));
+                   
+                    ProductFacade pf = new ProductFacade();
+                    pf.update(product);
                 case "cancel":
-                    //cho hien danh sach toys ( chay lai case index )
-                    request.getRequestDispatcher("/index.jsp").forward(request, response);
+                   
+                    request.getRequestDispatcher("/product?action=index").forward(request, response);
                     break;
             }
-            
         } catch (Exception ex) {
             ex.printStackTrace();
-            request.setAttribute("message","Can't insert a new toy");
+            request.setAttribute("message", "Can't edit product");
             edit(request, response);
+
         }
     }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -252,7 +228,8 @@ public class ToyController extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-/**
+
+    /**
      * Returns a short description of the servlet.
      *
      * @return a String containing servlet description
@@ -262,6 +239,4 @@ public class ToyController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
-        
 }

@@ -15,7 +15,7 @@
         <h1>Delete Product</h1>
         <hr/>
         <form action ="product">
-            Are you sure to delete this toy with id = ${param.id}?
+            Are you sure to delete this product with id = ${param.id}?
             <input type="hidden" name="id" value="${param.id}" />
             <input type="hidden" name="action" value="delete_handler" />
             <button type="submit" name="op" value="yes" >Yes</button>

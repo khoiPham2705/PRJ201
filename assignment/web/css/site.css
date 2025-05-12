@@ -1,0 +1,13 @@
+.header {
+    border-bottom: 1px solid red;
+    margin-bottom: 5px;
+}
+
+.footer {
+    border-top: 1px solid red;
+    margin-top: 5px;
+}
+
+.title {
+  text-shadow: 2px 2px 4px cyan;
+}

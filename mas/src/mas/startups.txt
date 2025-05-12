@@ -1,0 +1,3 @@
+TechX,0.1,4.5
+HealthPlus,0.05,6.0
+EcoEnergy,0.2,5.2
